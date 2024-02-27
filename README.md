@@ -1,5 +1,6 @@
 # LimeSurvey-SAML
-LimeSurvey authentication plugin for authenticating users against an SAML Identity Provider. Forked to handle PHP session conflicts and add more configuration options.
+
+LimeSurvey authentication plugin for authenticating users against an SAML Identity Provider.
 
 ## Requirements
 - LimeSurvey 3.XX

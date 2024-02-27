@@ -1,15 +1,19 @@
 <?php
 
 /*
- * LimeSurvey Auhtnetication Plugin for Limesurvey 3.14+
- * Auhtor: Frank Niesten
- * License: GNU General Public License v3.0
+ * LimeSurvey Auhtnetication Plugin for Limesurvey
+ * @auhtor : Frank Niesten <https://github.com/Frankniesten>
+ * @author : Panagiotis Karatakis <https://github.com/karatakis>
+ * @author : Denis Chenu <https://sondages.pro>
+ * @license: GNU General Public License v3.0
+ * @version 1.0.0-alpha1
  *
  * This plugin is based on the following LimeSurvey Plugins:
  * URL: https://github.com/LimeSurvey/LimeSurvey/blob/master/application/core/plugins/Authwebserver/Authwebserver.php
  * URL: https://github.com/LimeSurvey/LimeSurvey/blob/master/application/core/plugins/AuthLDAP/AuthLDAP.php
  * URL: https://github.com/pitbulk/limesurvey-saml
  * URL: https://github.com/Frankniesten/Limesurvey-SAML-Authentication
+ * URL: https://github.com/auth-it-center/Limesurvey-SAML-Authentication
  */
 
 class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
@@ -17,7 +21,7 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
     protected $storage = 'DbStorage';
     protected $ssp = null;
 
-    static protected $description = 'Core: SAML authentication';
+    static protected $description = 'SAML authentication';
     static protected $name = 'SAML';
 
     protected $settings = array(
