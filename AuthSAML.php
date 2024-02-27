@@ -170,9 +170,9 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
         $newLoginFormEvent = $this->getEvent();
         $authtype_base = $this->get('authtype_base', null, null, 'Authdb');
         $ssp = $this->get_saml_instance();
-        //~ if (is_null($ssp)) {
-            //~ return;
-        //~ }
+        if (is_null($ssp)) {
+            return;
+        }
         $data = [
             'description' => $this->gT('Click on that button to initiate SAML Login'),
             'loginUrl' => "http://test", //$ssp->getLoginURL(),
@@ -223,7 +223,7 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
                 }
             } elseif (is_null($oUser)) {
                 $this->setAuthFailure(self::ERROR_USERNAME_INVALID);
-            } elseif (!Permission::model()->hasGlobalPermission('auth_ldap', 'read', $oUser->uid)) {
+            } elseif (!Permission::model()->hasGlobalPermission('auth_saml', 'read', $oUser->uid)) {
                 $this->setAuthFailure(self::ERROR_USERNAME_INVALID);
             } else {
                 // *** Update user ***
