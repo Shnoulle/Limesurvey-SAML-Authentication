@@ -130,6 +130,9 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
      **/
     public function beforeLogin()
     {
+        if (App()->getSession()->get('auth_saml_invalid')) {
+            return;
+        }
         $ssp = $this->get_saml_instance();
         if (is_null($ssp)) {
             return;
@@ -169,18 +172,28 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
     {
         $newLoginFormEvent = $this->getEvent();
         $authtype_base = $this->get('authtype_base', null, null, 'Authdb');
+        if (App()->getSession()->get('auth_saml_invalid')) {
+            $invalidAccount = $this->gT('Invalid SAML account for this service');
+            $content = '<div class="alert alert-warning">' . $invalidAccount . '</div>';
+            $newLoginFormEvent->getContent($authtype_base)->addContent($content, 'prepend');
+            return;
+        }
         $ssp = $this->get_saml_instance();
         if (is_null($ssp)) {
             return;
         }
-        $data = [
-            'description' => $this->gT('Click on that button to initiate SAML Login'),
-            'loginUrl' => "http://test", //$ssp->getLoginURL(),
-            'imageUrl' => Yii::app()->getConfig('imageurl') . '/saml_logo.gif',
-            'imageAlt' => $this->gT('SAML Login')
-        ];
-        $content = $this->api->renderTwig(__DIR__ . '/twig/AuthSaml.twig', $data);
-        tracevar($content);
+        $description = $this->gT('Click on that button to initiate SAML Login');
+        $imageUrl = Yii::app()->getConfig('imageurl') . '/saml_logo.gif';
+        $imageAlt = $this->gT('SAML Login');
+        /* No usage of twig : LimeSurvey twig replaced by simplesamlphp due to autoload */
+        $content = '<div class="saml-container">' .
+                    '<div class="text-center">' . $description . '</div>' .
+                    '<div class="text-center">' .
+                    '<a href="' . $ssp->getLoginURL() . '" title="' . $imageAlt . '" class="btn btn-primary">' .
+                    '<img src="' . $imageUrl . '" alt="' . $imageAlt . '">' .
+                    '</a>' .
+                    '</div>' .
+                    '</div>';
         $newLoginFormEvent->getContent($authtype_base)->addContent($content, 'prepend');
     }
 
@@ -200,7 +213,6 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
             $mail = $this->getUserMail();
 
             $oUser = $this->api->getUserByName($sUser);
-
             $auto_create_users = $this->get('auto_create_users', null, null, true);
 
             if (is_null($oUser) and $auto_create_users) {
@@ -219,12 +231,15 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
                     $this->pluginManager->dispatchEvent(new PluginEvent('newUserLogin', $this));
                     $this->setAuthSuccess($oUser);
                 } else {
+                    $this->subscribe('afterFailedLoginAttempt');
                     $this->setAuthFailure(self::ERROR_USERNAME_INVALID);
                 }
             } elseif (is_null($oUser)) {
+                $this->subscribe('afterFailedLoginAttempt');
                 $this->setAuthFailure(self::ERROR_USERNAME_INVALID);
             } elseif (!Permission::model()->hasGlobalPermission('auth_saml', 'read', $oUser->uid)) {
-                $this->setAuthFailure(self::ERROR_USERNAME_INVALID);
+                $this->subscribe('afterFailedLoginAttempt');
+                $this->setAuthFailure(self::ERROR_AUTH_METHOD_INVALID);
             } else {
                 // *** Update user ***
                 $auto_update_users = $this->get('auto_update_users', null, null, true);
@@ -252,7 +267,6 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
      */
     public function get_saml_instance()
     {
-
         if ($this->ssp == null) {
             $simplesamlphp_path = $this->get('simplesamlphp_path', null, null, '/var/www/simplesamlphp');
             if (!is_file($simplesamlphp_path . '/lib/_autoload.php')) {
@@ -334,5 +348,26 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
             }
         }
         return $mail;
+    }
+
+    /**
+     * Set needed part after fail login attempt
+     */
+    public function afterFailedLoginAttempt()
+    {
+        App()->getSession()->add('auth_saml_invalid', true);
+    }
+
+    /**
+     * @see parent:gt
+     * To be used with old LimeSurvey version
+     * Replace $sEscapeMode to unescaped
+     */
+    public function translate($sToTranslate, $sEscapeMode = 'unescaped', $sLanguage = null)
+    {
+        if (is_callable($this, 'gT')) {
+            return $this->gT($sToTranslate, $sEscapeMode, $sLanguage);
+        }
+        return $sToTranslate;
     }
 }
