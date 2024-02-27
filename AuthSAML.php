@@ -214,19 +214,17 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
 
                 if ($oUser->save()) {
                     $permission = new Permission();
-
                     Permission::model()->setGlobalPermission($oUser->uid, 'auth_saml');
-
                     $oUser = $this->api->getUserByName($sUser);
-
                     $this->pluginManager->dispatchEvent(new PluginEvent('newUserLogin', $this));
-
                     $this->setAuthSuccess($oUser);
                 } else {
                     $this->setAuthFailure(self::ERROR_USERNAME_INVALID);
                 }
             } elseif (is_null($oUser)) {
-                throw new CHttpException(401, gT("We are sorry but you do not have an account."));
+                $this->setAuthFailure(self::ERROR_USERNAME_INVALID);
+            } elseif (!Permission::model()->hasGlobalPermission('auth_ldap', 'read', $oUser->uid)) {
+                $this->setAuthFailure(self::ERROR_USERNAME_INVALID);
             } else {
                 // *** Update user ***
                 $auto_update_users = $this->get('auto_update_users', null, null, true);
@@ -235,11 +233,9 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
                         'full_name' => $name,
                         'email' => $mail,
                     );
-
                     User::model()->updateByPk($oUser->uid, $changes);
                     $oUser = $this->api->getUserByName($sUser);
                 }
-
                 $this->setAuthSuccess($oUser);
             }
         }
