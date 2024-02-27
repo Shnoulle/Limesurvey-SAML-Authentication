@@ -10,7 +10,7 @@
         <supportUrl>https://support.sondages.pro/</supportUrl>
         <version>1.0.0-alpha1</version>
         <license>GNU General Public License v3.0</license>
-        <description><![CDATA[LimeSurvey Auhtnetication Plugin]]></description>
+        <description><![CDATA[LimeSurvey SAML authentication]]></description>
     </metadata>
     <compatibility>
         <version>3</version>
