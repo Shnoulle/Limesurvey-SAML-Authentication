@@ -13,6 +13,8 @@ LimeSurvey authentication plugin for authenticating users against an SAML Identi
 - Go to **Admin > Configuration > Plugin Manager** or **https:/example.com/index.php/admin/pluginmanager/sa/index** and **Enable** the plugin
 - Place your own custom **saml_logo.gif** image at **imesurvey/assets/images**. It will be displayed as the login button
 
+You can clone the repository directly `git clone https://github.com/Shnoulle/Limesurvey-SAML-Authentication.git AuthSAML` in limesurvey plugin directory.
+
 ## Configuration options
 - **Path to the SimpleSAMLphp folder**: path to the simpleSAMLphp installation
 - **Does simplesamlphp use cookie as a session storage ?**: if simpleSAMLPHP is configured to use cookies as session storage
