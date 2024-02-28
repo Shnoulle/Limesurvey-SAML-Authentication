@@ -6,7 +6,7 @@
  * @author : Panagiotis Karatakis <https://github.com/karatakis>
  * @author : Denis Chenu <https://sondages.pro>
  * @license: GNU General Public License v3.0
- * @version 1.0.0-alpha1
+ * @version 1.1.0
  *
  * This plugin is based on the following LimeSurvey Plugins:
  * URL: https://github.com/LimeSurvey/LimeSurvey/blob/master/application/core/plugins/Authwebserver/Authwebserver.php
@@ -38,7 +38,7 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
         'saml_authsource' => array(
             'type' => 'string',
             'label' => 'SAML authentication source',
-            'default' => 'default-sp',
+            'default' => 'limesurvey',
         ),
         'saml_uid_mapping' => array(
             'type' => 'string',
@@ -131,6 +131,10 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
     public function beforeLogin()
     {
         if (App()->getSession()->get('auth_saml_invalid')) {
+            if ($this->get('force_saml_login', null, null, false)) {
+                $invalidAccount = $this->gT('Invalid SAML account for this service');
+                throw new CHttpException(403, $invalidAccount);
+            }
             return;
         }
         $ssp = $this->get_saml_instance();
@@ -203,6 +207,11 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
      **/
     public function newUserSession()
     {
+        $oEvent = $this->getEvent();
+        $identity = $oEvent->get('identity');
+        if ($identity->plugin != 'AuthSAML' ) {
+            return;
+        }
         $ssp = $this->get_saml_instance();
         if (is_null($ssp)) {
             return;
@@ -239,8 +248,9 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
                 $this->setAuthFailure(self::ERROR_USERNAME_INVALID);
             } elseif (!Permission::model()->hasGlobalPermission('auth_saml', 'read', $oUser->uid)) {
                 $this->subscribe('afterFailedLoginAttempt');
-                $this->setAuthFailure(self::ERROR_AUTH_METHOD_INVALID);
+                $this->setAuthFailure(self::ERROR_AUTH_METHOD_INVALID, $this->gT('Invalid SAML account for this service'));
             } else {
+                /* @todo Check if user have still access (expire and active) */
                 // *** Update user ***
                 $auto_update_users = $this->get('auto_update_users', null, null, true);
                 if ($auto_update_users) {
