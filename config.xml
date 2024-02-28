@@ -16,7 +16,6 @@
         <version>3</version>
         <version>4</version>
         <version>5</version>
-        <version>6</version>
     </compatibility>
     <updaters disabled="disabled"></updaters>
 </config>
