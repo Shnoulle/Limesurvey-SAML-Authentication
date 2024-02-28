@@ -3,8 +3,8 @@
 LimeSurvey authentication plugin for authenticating users against an SAML Identity Provider.
 
 ## Requirements
-- LimeSurvey 3.XX
-- simpleSAMLphp
+- LimeSurvey 3 to 6 version
+- simpleSAMLphp (configurated)
 
 ## Installation instructions
 - Create folder **AuthSAML** inside **limesurvey/plugins** folder
@@ -39,7 +39,6 @@ Login Page
 
 Plugin settings at plugin manager
 ![Plugin settings at plugin manager](images/saml_settings.png)
-
 
 
 ## External material
