@@ -6,7 +6,7 @@
  * @author : Panagiotis Karatakis <https://github.com/karatakis>
  * @author : Denis Chenu <https://sondages.pro>
  * @license: GNU General Public License v3.0
- * @version 1.1.0
+ * @version 1.1.1
  *
  * This plugin is based on the following LimeSurvey Plugins:
  * URL: https://github.com/LimeSurvey/LimeSurvey/blob/master/application/core/plugins/Authwebserver/Authwebserver.php
@@ -22,7 +22,7 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
     protected $ssp = null;
 
     protected static $description = 'SAML authentication';
-    protected static $name = 'SAML';
+    protected static $name = 'AuthSAML';
 
     protected $settings = array(
         'simplesamlphp_path' => array(
