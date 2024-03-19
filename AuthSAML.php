@@ -102,6 +102,7 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
         if (!$this->get('force_saml_login', null, null, false)) {
             $this->subscribe('newLoginForm');
         }
+
     }
 
     /**
@@ -277,7 +278,6 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
             } else {
                 $session = \SimpleSAML\Session::getSessionFromRequest();
             }
-            $session = \SimpleSAML\Session::getSessionFromRequest();
             $session->cleanup();
         }
     }
