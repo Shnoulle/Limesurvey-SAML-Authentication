@@ -4,11 +4,11 @@
         <name>AuthSAML</name>
         <type>plugin</type>
         <creationDate>2018-08-144</creationDate>
-        <lastUpdate>2024-02-26</lastUpdate>
+        <lastUpdate>2024-03-19</lastUpdate>
         <author>Frank Niesten, Panagiotis Karatakis, Denis Chenu and other contributo</author>
         <authorUrl>https://github.com/Shnoulle/Limesurvey-SAML-Authentication/graphs/contributors</authorUrl>
         <supportUrl>https://support.sondages.pro/</supportUrl>
-        <version>1.1.0</version>
+        <version>1.1.2</version>
         <license>GNU General Public License v3.0</license>
         <description><![CDATA[LimeSurvey SAML authentication]]></description>
     </metadata>

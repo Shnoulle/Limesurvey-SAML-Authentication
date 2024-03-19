@@ -6,7 +6,7 @@
  * @author : Panagiotis Karatakis <https://github.com/karatakis>
  * @author : Denis Chenu <https://sondages.pro>
  * @license: GNU General Public License v3.0
- * @version 1.1.1
+ * @version 1.1.2
  *
  * This plugin is based on the following LimeSurvey Plugins:
  * URL: https://github.com/LimeSurvey/LimeSurvey/blob/master/application/core/plugins/Authwebserver/Authwebserver.php
@@ -189,7 +189,10 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
         $description = $this->gT('Click on that button to initiate SAML Login');
         $imageUrl = Yii::app()->getConfig('imageurl') . '/saml_logo.gif';
         $imageAlt = $this->gT('SAML Login');
-        /* No usage of twig : LimeSurvey twig replaced by simplesamlphp due to autoload */
+        /* No usage of twig : LimeSurvey twig replaced by simplesamlphp due to autoload
+         * Break on limesurvey 3 and 5
+         * @todo : find a way to fix it, or use twig only for 6
+         **/
         $content = '<div class="saml-container">' .
                     '<div class="text-center">' . $description . '</div>' .
                     '<div class="text-center">' .
@@ -209,7 +212,7 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
     {
         $oEvent = $this->getEvent();
         $identity = $oEvent->get('identity');
-        if ($identity->plugin != 'AuthSAML' ) {
+        if ($identity->plugin != 'AuthSAML') {
             return;
         }
         $ssp = $this->get_saml_instance();
@@ -266,6 +269,14 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
         }
         $flag = $this->get('simplesamlphp_cookie_session_storage', null, null, true);
         if ($flag) {
+            /* if class already exist : use it, else call
+             * @see https://github.com/auth-it-center/Limesurvey-SAML-Authentication/pull/6#discussion_r1529844452
+             **/
+            if (class_exists('SimpleSAML_Session')) {
+                $session = SimpleSAML_Session::getSessionFromRequest();
+            } else {
+                $session = \SimpleSAML\Session::getSessionFromRequest();
+            }
             $session = \SimpleSAML\Session::getSessionFromRequest();
             $session->cleanup();
         }
