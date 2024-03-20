@@ -6,7 +6,7 @@
  * @author : Panagiotis Karatakis <https://github.com/karatakis>
  * @author : Denis Chenu <https://sondages.pro>
  * @license: GNU General Public License v3.0
- * @version 1.1.2
+ * @version 1.1.3
  *
  * This plugin is based on the following LimeSurvey Plugins:
  * URL: https://github.com/LimeSurvey/LimeSurvey/blob/master/application/core/plugins/Authwebserver/Authwebserver.php
@@ -214,6 +214,7 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
         $oEvent = $this->getEvent();
         $identity = $oEvent->get('identity');
         if ($identity->plugin != 'AuthSAML') {
+            $this->cleanSimpleSamlSession();
             return;
         }
         $ssp = $this->get_saml_instance();
@@ -268,11 +269,17 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
                 $this->setAuthSuccess($oUser);
             }
         }
-        $flag = $this->get('simplesamlphp_cookie_session_storage', null, null, true);
-        if ($flag) {
-            /* if class already exist : use it, else call
-             * @see https://github.com/auth-it-center/Limesurvey-SAML-Authentication/pull/6#discussion_r1529844452
-             **/
+        $this->cleanSimpleSamlSession();
+    }
+
+    /**
+     * Clean SimpleSAML session
+     * @return void
+     */
+    private function cleanSimpleSamlSession()
+    {
+        if ($this->get('simplesamlphp_cookie_session_storage', null, null, true)) {
+            /* if class already exist : use it, else call */
             if (class_exists('SimpleSAML_Session')) {
                 $session = SimpleSAML_Session::getSessionFromRequest();
             } else {
