@@ -279,7 +279,10 @@ class AuthSAML extends LimeSurvey\PluginManager\AuthPluginBase
     private function cleanSimpleSamlSession()
     {
         if ($this->get('simplesamlphp_cookie_session_storage', null, null, true)) {
-            /* if class already exist : use it, else call */
+            /**
+             * if class already exist : use it, else call
+             * @see https://github.com/auth-it-center/Limesurvey-SAML-Authentication/pull/6#discussion_r1529844452
+             **/
             if (class_exists('SimpleSAML_Session')) {
                 $session = SimpleSAML_Session::getSessionFromRequest();
             } else {
